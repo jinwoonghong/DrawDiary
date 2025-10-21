@@ -12,15 +12,18 @@ DrawDiary는 바쁜 현대인을 위한 미니멀한 그림일기 앱입니다. 
 - 😊 **감정 기록**: 오늘의 기분을 이모지로 선택
 - 📅 **캘린더 뷰**: 한눈에 보는 나의 일기 기록
 - 🍎 **애플 디자인**: iOS Human Interface Guidelines 기반 UI
+- 🔒 **완전한 프라이버시**: 모든 데이터는 디바이스에만 저장 (서버 없음)
+- ⚡ **빠른 개발**: 최소화된 기술 스택으로 4주 MVP
 
-## 기술 스택
+## 기술 스택 (최소화)
 
 - **Framework**: React Native 0.73
-- **Language**: TypeScript
+- **Language**: TypeScript (선택)
 - **State Management**: React Context API + Hooks
-- **Storage**: AsyncStorage (로컬)
+- **Storage**: AsyncStorage (100% 로컬, 서버 없음)
 - **Navigation**: React Navigation 6
-- **UI Components**: React Native Paper (iOS 스타일 커스터마이징)
+- **UI Components**: React Native 기본 컴포넌트 (라이브러리 최소화)
+- **총 의존성**: 7개의 핵심 라이브러리만 사용
 
 ## 시작하기
 
@@ -72,7 +75,8 @@ src/
 ## 문서
 
 - [기획서](./docs/기획서.md) - 상세 프로젝트 기획 문서
-- [기술스택](./docs/기술스택.md) - 기술 스택 상세 설명
+- [기술스택](./docs/기술스택.md) - 최소화된 기술 스택 상세 설명
+- [데이터관리](./docs/데이터관리.md) - 로컬 저장소 및 백업 가이드
 
 ## 개발 로드맵
 
@@ -85,10 +89,13 @@ src/
 - [ ] 로컬 저장소 연동
 
 ### Phase 2: 확장 (추후)
-- [ ] Firebase 연동
-- [ ] 클라우드 동기화
-- [ ] 소셜 기능
-- [ ] 프리미엄 기능
+- [ ] 향상된 스케치 도구
+- [ ] 통계 및 시각화
+- [ ] 다크 모드 / 테마
+- [ ] PDF 내보내기
+- [ ] 위젯 지원
+
+**주의**: 모든 기능은 로컬에서만 작동하며, 서버를 사용하지 않습니다.
 
 ## 기여하기
 
