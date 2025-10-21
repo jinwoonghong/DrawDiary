@@ -18,7 +18,7 @@ import { useDiary } from '../contexts/DiaryContext';
 import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
 import { Layout } from '../constants/layout';
-import { MoodType } from '../types';
+import { MoodType, ImageType } from '../types';
 import { validateDiaryText, getRemainingChars } from '../utils/validation';
 import { getTodayString } from '../utils/date';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -41,10 +41,12 @@ const DiaryEditScreen: React.FC<Props> = ({ navigation, route }) => {
   const [mood, setMood] = useState<MoodType>(existingEntry?.mood || '😊');
   const [text, setText] = useState(existingEntry?.text || '');
   const [imageUri, setImageUri] = useState(existingEntry?.imageUri);
+  const [imageType, setImageType] = useState<ImageType | undefined>(
+    existingEntry?.imageType
+  );
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    // 헤더 오른쪽에 저장 버튼
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={handleSave} disabled={saving}>
@@ -54,10 +56,9 @@ const DiaryEditScreen: React.FC<Props> = ({ navigation, route }) => {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, mood, text, imageUri, saving]);
+  }, [navigation, mood, text, imageUri, imageType, saving]);
 
   const handleSave = async () => {
-    // 유효성 검사
     const validation = validateDiaryText(text);
     if (!validation.isValid) {
       Alert.alert('입력 오류', validation.error);
@@ -68,21 +69,19 @@ const DiaryEditScreen: React.FC<Props> = ({ navigation, route }) => {
       setSaving(true);
 
       if (entryId) {
-        // 수정
         await updateEntry(entryId, {
           mood,
           text,
           imageUri,
-          imageType: imageUri ? 'photo' : undefined,
+          imageType,
         });
       } else {
-        // 새로 작성
         await addEntry({
           date: initialDate,
           mood,
           text,
           imageUri,
-          imageType: imageUri ? 'photo' : undefined,
+          imageType,
         });
       }
 
@@ -98,7 +97,7 @@ const DiaryEditScreen: React.FC<Props> = ({ navigation, route }) => {
   const handlePickImage = () => {
     Alert.alert(
       '이미지 선택',
-      '사진을 추가할 방법을 선택하세요',
+      '그림을 추가할 방법을 선택하세요',
       [
         {
           text: '카메라',
@@ -106,6 +105,7 @@ const DiaryEditScreen: React.FC<Props> = ({ navigation, route }) => {
             launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
               if (response.assets && response.assets[0]) {
                 setImageUri(response.assets[0].uri);
+                setImageType('photo');
               }
             });
           },
@@ -116,7 +116,19 @@ const DiaryEditScreen: React.FC<Props> = ({ navigation, route }) => {
             launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
               if (response.assets && response.assets[0]) {
                 setImageUri(response.assets[0].uri);
+                setImageType('photo');
               }
+            });
+          },
+        },
+        {
+          text: '스케치',
+          onPress: () => {
+            navigation.navigate('Sketch', {
+              onSave: (uri: string) => {
+                setImageUri(uri);
+                setImageType('sketch');
+              },
             });
           },
         },
@@ -127,6 +139,7 @@ const DiaryEditScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const handleRemoveImage = () => {
     setImageUri(undefined);
+    setImageType(undefined);
   };
 
   const remainingChars = getRemainingChars(text);
@@ -199,6 +212,11 @@ const DiaryEditScreen: React.FC<Props> = ({ navigation, route }) => {
         {imageUri ? (
           <View>
             <Image source={{ uri: imageUri }} style={styles.image} />
+            <View style={styles.imageInfo}>
+              <Text style={[styles.imageTypeText, { color: theme.textSecondary }]}>
+                {imageType === 'sketch' ? '✏️ 스케치' : '📷 사진'}
+              </Text>
+            </View>
             <TouchableOpacity
               style={[styles.removeImageButton, { backgroundColor: Colors.error }]}
               onPress={handleRemoveImage}>
@@ -210,9 +228,9 @@ const DiaryEditScreen: React.FC<Props> = ({ navigation, route }) => {
             <TouchableOpacity
               style={[styles.imageButton, { backgroundColor: theme.secondaryBackground }]}
               onPress={handlePickImage}>
-              <Text style={styles.imageButtonIcon}>📷</Text>
+              <Text style={styles.imageButtonIcon}>🎨</Text>
               <Text style={[styles.imageButtonText, { color: theme.textPrimary }]}>
-                사진 추가
+                사진 또는 스케치 추가
               </Text>
             </TouchableOpacity>
           </View>
@@ -286,6 +304,13 @@ const styles = StyleSheet.create({
     height: 300,
     borderRadius: Layout.borderRadius.md,
     resizeMode: 'cover',
+  },
+  imageInfo: {
+    marginTop: Layout.spacing.sm,
+    alignItems: 'center',
+  },
+  imageTypeText: {
+    ...Typography.caption1,
   },
   removeImageButton: {
     marginTop: Layout.spacing.md,

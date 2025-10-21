@@ -9,10 +9,12 @@ import { RootStackParamList } from '../types';
 import { Colors } from '../constants/colors';
 import { useColorScheme } from 'react-native';
 
-// 화면 import (나중에 구현)
+// 화면 import
 import HomeScreen from '../screens/HomeScreen';
 import DiaryEditScreen from '../screens/DiaryEditScreen';
 import DiaryViewScreen from '../screens/DiaryViewScreen';
+import SketchScreen from '../screens/SketchScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -61,6 +63,21 @@ const AppNavigator: React.FC = () => {
           component={DiaryViewScreen}
           options={{
             headerTitle: '일기',
+          }}
+        />
+        <Stack.Screen
+          name="Sketch"
+          component={SketchScreen}
+          options={{
+            headerTitle: '스케치',
+            presentation: 'modal',
+          }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            headerTitle: '설정',
           }}
         />
       </Stack.Navigator>

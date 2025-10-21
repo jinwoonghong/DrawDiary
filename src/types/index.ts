@@ -42,6 +42,8 @@ export type RootStackParamList = {
   Home: undefined;
   DiaryEdit: { entryId?: string; date?: string };
   DiaryView: { entryId: string };
+  Sketch: { onSave: (uri: string) => void };
+  Settings: undefined;
 };
 
 // 뷰 모드 타입
